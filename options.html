@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="ru">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Options</title>
+		<style>
+			body {
+				background-color: #eceff4;
+				padding: 0.5rem;
+				color: #2e3440;
+				font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+
+				.property {
+					margin-bottom: 0.5rem;
+				}
+
+				label {
+					user-select: none;
+				}
+
+				.property.checkbox {
+					display: flex;
+					align-items: center;
+				}
+
+				input[type="text"],
+				input[type="password"] {
+					border: 1px solid #88c0d0;
+					border-radius: 0.2rem;
+					padding: 5px 10px;
+					outline: none;
+				}
+
+				.btn {
+					background-color: transparent;
+					color: #2e3440;
+					border: 1px solid #88c0d0;
+					border-radius: 0.2rem;
+					padding: 5px 10px;
+					float: right;
+					margin: 1rem 0;
+					cursor: pointer;
+				}
+
+				.btn:hover {
+					background-color: #88c0d0;
+				}
+			}
+		</style>
+	</head>
+	<body>
+		<div class="options"></div>
+		<button class="save btn">Сохранить</button>
+		<script src="src/options.js"></script>
+	</body>
+</html>
