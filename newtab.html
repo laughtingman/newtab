@@ -18,56 +18,58 @@
 			</symbol>
 		</svg>
 		<div id="app">
-			<div class="searchForm">
-				<input type="search" class="searchFiled" />
-				<div class="buttons">
-					<button tabindex="-1" class="btn" data-url="https://www.google.ru/search?q="><img src="http://favicon.yandex.net/favicon/www.google.ru" class="icon" />Google</button>
-					<button tabindex="-1" class="btn" data-url="https://yandex.ru/search/?text="><img src="http://favicon.yandex.net/favicon/yandex.ru" class="icon" />Яндекс</button>
-					<button tabindex="-1" class="btn" data-url="https://duckduckgo.com/?q="><img src="http://favicon.yandex.net/favicon/duckduckgo.com" class="icon" />Duckduckgo</button>
-					<div class="dropdown">
-						<span class="icon">▼</span>
-						<div class="content">
-							<button tabindex="-1" class="btn" data-url="https://github.com/search?type=repositories&q="><img src="http://favicon.yandex.net/favicon/github.com" class="icon" />Github</button>
-							<button tabindex="-1" class="btn" data-url="https://stackoverflow.com/search?q="><img src="http://favicon.yandex.net/favicon/stackoverflow.com" class="icon" />StackOverflow</button>
-							<button tabindex="-1" class="btn" data-url="https://ru.stackoverflow.com/search?q="><img src="http://favicon.yandex.net/favicon/ru.stackoverflow.com" class="icon" />Ru StackOverflow</button>
+			<div class="container">
+				<div class="searchForm">
+					<input type="search" class="searchFiled" />
+					<div class="buttons">
+						<button tabindex="-1" class="btn" data-url="https://www.google.ru/search?q="><img src="http://favicon.yandex.net/favicon/www.google.ru" class="icon" />Google</button>
+						<button tabindex="-1" class="btn" data-url="https://yandex.ru/search/?text="><img src="http://favicon.yandex.net/favicon/yandex.ru" class="icon" />Яндекс</button>
+						<button tabindex="-1" class="btn" data-url="https://duckduckgo.com/?q="><img src="http://favicon.yandex.net/favicon/duckduckgo.com" class="icon" />Duckduckgo</button>
+						<div class="dropdown">
+							<span class="icon">▼</span>
+							<div class="content">
+								<button tabindex="-1" class="btn" data-url="https://github.com/search?type=repositories&q="><img src="http://favicon.yandex.net/favicon/github.com" class="icon" />Github</button>
+								<button tabindex="-1" class="btn" data-url="https://stackoverflow.com/search?q="><img src="http://favicon.yandex.net/favicon/stackoverflow.com" class="icon" />StackOverflow</button>
+								<button tabindex="-1" class="btn" data-url="https://ru.stackoverflow.com/search?q="><img src="http://favicon.yandex.net/favicon/ru.stackoverflow.com" class="icon" />Ru StackOverflow</button>
+							</div>
 						</div>
 					</div>
 				</div>
-			</div>
-			<div class="tree">
-				<svg class="loading" width="24" height="24" stroke="#000" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-					<style>
-						.spinner_V8m1 {
-							transform-origin: center;
-							animation: spinner_zKoa 2s linear infinite;
-						}
-						.spinner_V8m1 circle {
-							stroke-linecap: round;
-							animation: spinner_YpZS 1.5s ease-in-out infinite;
-						}
-						@keyframes spinner_zKoa {
-							100% {
-								transform: rotate(360deg);
+				<div class="tree">
+					<svg class="loading" width="24" height="24" stroke="#000" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+						<style>
+							.spinner_V8m1 {
+								transform-origin: center;
+								animation: spinner_zKoa 2s linear infinite;
 							}
-						}
-						@keyframes spinner_YpZS {
-							0% {
-								stroke-dasharray: 0 150;
-								stroke-dashoffset: 0;
+							.spinner_V8m1 circle {
+								stroke-linecap: round;
+								animation: spinner_YpZS 1.5s ease-in-out infinite;
 							}
-							47.5% {
-								stroke-dasharray: 42 150;
-								stroke-dashoffset: -16;
+							@keyframes spinner_zKoa {
+								100% {
+									transform: rotate(360deg);
+								}
 							}
-							95%,
-							100% {
-								stroke-dasharray: 42 150;
-								stroke-dashoffset: -59;
+							@keyframes spinner_YpZS {
+								0% {
+									stroke-dasharray: 0 150;
+									stroke-dashoffset: 0;
+								}
+								47.5% {
+									stroke-dasharray: 42 150;
+									stroke-dashoffset: -16;
+								}
+								95%,
+								100% {
+									stroke-dasharray: 42 150;
+									stroke-dashoffset: -59;
+								}
 							}
-						}
-					</style>
-					<g class="spinner_V8m1"><circle cx="12" cy="12" r="9.5" fill="none" stroke-width="3"></circle></g>
-				</svg>
+						</style>
+						<g class="spinner_V8m1"><circle cx="12" cy="12" r="9.5" fill="none" stroke-width="3"></circle></g>
+					</svg>
+				</div>
 			</div>
 		</div>
 		<script src="/src/fuse.js"></script>

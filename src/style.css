@@ -1,10 +1,25 @@
+:root {
+	--background-color: #2e3440;
+	--color: #eceff4;
+	--accent: #5e81ac;
+	--dark-accent: #88c0d0;
+}
+
 body {
 	overflow-x: hidden;
 	overflow-y: scroll;
 	font-size: 16px;
-	background-color: #eceff4;
-	color: #2e3440;
+	background-color: var(--color);
+	color: var(--background-color);
 	font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+	margin: 0;
+	padding: 0;
+}
+
+body.dark {
+	background-color: var(--background-color);
+	color: var(--color);
+	--accent: var(--dark-accent);
 }
 
 ::-webkit-scrollbar {
@@ -12,18 +27,35 @@ body {
 	background: transparent;
 }
 
-::-webkit-scrollbar-thumb {
-	background: #ff0000;
-}
-
-body.dark {
-	background-color: #2e3440;
-	color: #eceff4;
-}
-
 #app {
+	display: flex;
+	margin: 0;
+	padding: 0;
+}
+
+.cover {
+	height: 100vh;
+	position: sticky;
+	top: 0;
+}
+
+.cover.left {
+	order: -1;
+}
+
+.cover.right {
+	order: 2;
+}
+
+.cover img {
+	object-fit: cover;
+	height: 100%;
+	width: auto;
+}
+
+.container {
 	margin: 2rem auto;
-	padding: 2rem;
+	padding: 0 2rem;
 }
 
 div,
@@ -80,7 +112,7 @@ li a .title {
 a:link,
 a:visited,
 a:active {
-	color: #5e81ac;
+	color: var(--accent);
 	text-decoration: none;
 }
 
@@ -91,12 +123,6 @@ li.hide > a {
 
 li.hide > a .icon {
 	opacity: 0;
-}
-
-.dark a:link,
-.dark a:visited,
-.dark a:active {
-	color: #88c0d0;
 }
 
 a:hover {
@@ -152,14 +178,12 @@ li div {
 	display: flex;
 	border-radius: 0.5rem;
 	margin-bottom: 2rem;
-	background-color: #eceff4;
+	background-color: transparent;
 	border: 1px solid #d8dee9;
 	padding: 5px 0 5px 5px;
 }
 
 .dark .searchForm {
-	background-color: #2e3440;
-
 	border: 1px solid #4c566a;
 }
 

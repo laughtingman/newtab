@@ -3,10 +3,45 @@ async function init() {
 	const searchFiled = app.querySelector(".searchFiled");
 
 	let properties = {};
-	const propertyKeys = ["dark_theme", "raindrop_api_key", "show_folder_icons", "show_favicons", "show_galleries", "censored_tags", "ignore_tags"];
+	const propertyKeys = ["dark_theme", "raindrop_api_key", "show_folder_icons", "show_favicons", "show_galleries", "censored_tags", "ignore_tags", "background_image", "background_position", "custom_css"];
 
 	for (let key of propertyKeys) {
 		properties[key] = (await chrome.storage.sync.get(key))[key] || null;
+	}
+
+	function initStyle() {
+		if (properties["background_image"] != null) {
+			let oldCover = document.querySelector(".cover");
+			if (oldCover) oldCover.remove();
+
+			let cover = document.createElement("div");
+			cover.classList.add("cover");
+
+			if (properties["background_position"] != null) {
+				cover.classList.add(properties["background_position"]);
+			}
+
+			let img = document.createElement("img");
+			img.src = properties["background_image"];
+			img.onload = () => {
+				cover.appendChild(img);
+				document.querySelector("#app").appendChild(cover);
+			};
+			img.onerror = () => {
+				cover.remove();
+			};
+		}
+
+		if (properties["custom_css"] != null) {
+			let userStyle = document.querySelector("style#userStyle");
+			if (!userStyle) {
+				userStyle = document.createElement("style");
+				userStyle.setAttribute("type", "text/css");
+				userStyle.setAttribute("id", "userStyle");
+				document.body.appendChild(userStyle);
+			}
+			userStyle.innerText = properties["custom_css"];
+		}
 	}
 
 	properties["censored_tags"] = properties["censored_tags"] ? new Set(properties["censored_tags"].split(",")) : new Set();
@@ -261,11 +296,21 @@ async function init() {
 		}
 	});
 
+	initStyle();
+
 	if (token) initRaindrop();
 
 	chrome.storage.onChanged.addListener((changes, namespace) => {
 		for (let [key, { oldValue, newValue }] of Object.entries(changes)) {
 			//console.log(`Storage key "${key}" in namespace "${namespace}" changed.`, `Old value was "${oldValue}", new value is "${newValue}".`);
+
+			const keysToUpdateStyle = ["background_image", "background_position", "custom_css"];
+			for (let updateKey of keysToUpdateStyle) {
+				if (key == updateKey) {
+					properties[updateKey] = newValue;
+					initStyle();
+				}
+			}
 
 			if (key == "dark_theme") {
 				if (newValue == "on") {

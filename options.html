@@ -5,47 +5,69 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<title>Options</title>
 		<style>
+			* {
+				box-sizing: border-box;
+			}
+
 			body {
 				background-color: #eceff4;
 				padding: 0.5rem;
 				color: #2e3440;
 				font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+			}
 
-				.property {
-					margin-bottom: 0.5rem;
-				}
+			.propertyes {
+				width: 300px;
+			}
 
-				label {
-					user-select: none;
-				}
+			.property {
+				margin-bottom: 0.5rem;
+			}
 
-				.property.checkbox {
-					display: flex;
-					align-items: center;
-				}
+			label {
+				user-select: none;
+			}
 
-				input[type="text"],
-				input[type="password"] {
-					border: 1px solid #88c0d0;
-					border-radius: 0.2rem;
-					padding: 5px 10px;
-					outline: none;
-				}
+			.property.checkbox {
+				display: flex;
+				align-items: center;
+			}
 
-				.btn {
-					background-color: transparent;
-					color: #2e3440;
-					border: 1px solid #88c0d0;
-					border-radius: 0.2rem;
-					padding: 5px 10px;
-					float: right;
-					margin: 1rem 0;
-					cursor: pointer;
-				}
+			.property:not(.checkbox) {
+				display: flex;
+				flex-direction: column;
+			}
 
-				.btn:hover {
-					background-color: #88c0d0;
-				}
+			input[type="text"],
+			input[type="password"],
+			select,
+			textarea {
+				border: 1px solid #88c0d0;
+				border-radius: 0.2rem;
+				padding: 5px 10px;
+				outline: none;
+				width: 100%;
+				min-width: 100%;
+				max-width: 100%;
+			}
+
+			textarea {
+				min-height: 5ch;
+			}
+
+			.btn {
+				background-color: transparent;
+				color: #2e3440;
+				border: 1px solid #88c0d0;
+				border-radius: 0.2rem;
+				padding: 5px 10px;
+				float: right;
+				margin: 1rem 0;
+				cursor: pointer;
+			}
+
+			.btn:hover {
+				background-color: #88c0d0;
 			}
 		</style>
 	</head>

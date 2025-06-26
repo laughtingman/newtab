@@ -36,12 +36,31 @@ async function initOptions() {
 			type: "text",
 			value: "",
 		},
+		background_image: {
+			label: "Ссылка на фоновую картинку",
+			type: "text",
+			value: "",
+		},
+		background_position: {
+			label: "Положение картинки",
+			type: "select",
+			value: "left",
+			values: [
+				{ value: "left", name: "Слева" },
+				{ value: "right", name: "Справа" },
+			],
+		},
+		custom_css: {
+			label: "Пользовательский CSS",
+			type: "textarea",
+			value: "",
+		},
 	};
 
 	for (const [id, property] of Object.entries(properties)) {
 		value = (await chrome.storage.sync.get([id]))[id] || property.value;
 
-		let template = "<div class='property'>";
+		let template = "<div class='propertyes'>";
 		//let value = chrome.storage.sync.getItem(property || property.value;
 
 		if (property.type == "text" || property.type == "password") {
@@ -57,6 +76,23 @@ async function initOptions() {
 			template += `<div class="property checkbox">
 				<input id='${id}' name='${id}' type='${property.type}' ${checked}>
 				<label for='${id}'>${property.label}</label>
+			</div>
+			`;
+		}
+
+		if (property.type == "select") {
+			template += `<div class="property select"><label for='${id}'>${property.label}</label><select id='${id}' name='${id}'>`;
+			for (let option of property.values) {
+				let selected = value == option.value ? "selected" : "";
+				template += `<option value='${option.value}' ${selected}>${option.name}</option>`;
+			}
+			template += `</select></div>`;
+		}
+
+		if (property.type == "textarea") {
+			template += `<div class="property text">
+				<label for='${id}'>${property.label}</label>
+				<textarea id='${id}' name='${id}' rows="5">${value}</textarea>
 			</div>
 			`;
 		}
