@@ -48,6 +48,7 @@ async function initOptions() {
 			values: [
 				{ value: "left", name: "Слева" },
 				{ value: "right", name: "Справа" },
+				{ value: "background", name: "На фоне" },
 			],
 		},
 		custom_css: {

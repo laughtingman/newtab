@@ -47,6 +47,12 @@ body.dark {
 	order: 2;
 }
 
+.cover.background {
+	position: fixed;
+	width: 100%;
+	z-index: -1;
+}
+
 .cover img {
 	object-fit: cover;
 	height: 100%;
