@@ -1,16 +1,6 @@
 async function initOptions() {
 	const popup = document.querySelector(".options");
 	const properties = {
-		raindrop_api_key: {
-			label: "Тестовый API ключ Raindrop",
-			type: "password",
-			value: "",
-		},
-		dark_theme: {
-			label: "Темная тема",
-			type: "checkbox",
-			value: "on",
-		},
 		show_folder_icons: {
 			label: "Показывать иконки папок",
 			type: "checkbox",
@@ -21,20 +11,10 @@ async function initOptions() {
 			type: "checkbox",
 			value: "off",
 		},
-		show_galleries: {
-			label: "Показывать ссылки на галереи",
+		dark_theme: {
+			label: "Темная тема",
 			type: "checkbox",
-			value: "off",
-		},
-		censored_tags: {
-			label: "Цензурить закладки с тегами",
-			type: "text",
-			value: "",
-		},
-		ignore_tags: {
-			label: "Полностью скрывать закладки с тегами",
-			type: "text",
-			value: "",
+			value: "on",
 		},
 		background_image: {
 			label: "Ссылка на фоновую картинку",
@@ -49,6 +29,7 @@ async function initOptions() {
 				{ value: "left", name: "Слева" },
 				{ value: "right", name: "Справа" },
 				{ value: "background", name: "На фоне" },
+				{ value: "hidden", name: "Скрыта" },
 			],
 		},
 		custom_css: {
@@ -56,10 +37,46 @@ async function initOptions() {
 			type: "textarea",
 			value: "",
 		},
+		use_raindrop: {
+			label: "Использовать закладки из Raindrop вместо локальных",
+			type: "checkbox",
+			value: "off",
+			trigger: true,
+		},
+		raindrop_api_key: {
+			label: "Тестовый API ключ Raindrop",
+			type: "password",
+			value: "",
+			enabledBy: "use_raindrop",
+		},
+		show_galleries: {
+			label: "Показывать ссылки на галереи",
+			type: "checkbox",
+			value: "off",
+			enabledBy: "use_raindrop",
+		},
+		censored_tags: {
+			label: "Цензурить закладки с тегами",
+			type: "text",
+			value: "",
+			enabledBy: "use_raindrop",
+		},
+		ignore_tags: {
+			label: "Полностью скрывать закладки с тегами",
+			type: "text",
+			value: "",
+			enabledBy: "use_raindrop",
+		},
 	};
 
 	for (const [id, property] of Object.entries(properties)) {
 		value = (await chrome.storage.sync.get([id]))[id] || property.value;
+
+		let disabled = "";
+
+		if (property.enabledBy != undefined) {
+			disabled = properties[property.enabledBy].value == "off" ? "disabled" : "";
+		}
 
 		let template = "<div class='propertyes'>";
 		//let value = chrome.storage.sync.getItem(property || property.value;
@@ -67,7 +84,7 @@ async function initOptions() {
 		if (property.type == "text" || property.type == "password") {
 			template += `<div class="property text">
 				<label for='${id}'>${property.label}</label>
-				<input id='${id}' name='${id}' type='${property.type}' value='${value}'>
+				<input id='${id}' name='${id}' type='${property.type}' value='${value}' ${disabled} class="filed">
 			</div>
 			`;
 		}
@@ -75,14 +92,14 @@ async function initOptions() {
 		if (property.type == "checkbox") {
 			let checked = value == "on" ? "checked" : "";
 			template += `<div class="property checkbox">
-				<input id='${id}' name='${id}' type='${property.type}' ${checked}>
+				<input id='${id}' name='${id}' type='${property.type}' ${checked}  ${disabled}  class="filed">
 				<label for='${id}'>${property.label}</label>
 			</div>
 			`;
 		}
 
 		if (property.type == "select") {
-			template += `<div class="property select"><label for='${id}'>${property.label}</label><select id='${id}' name='${id}'>`;
+			template += `<div class="property select"><label for='${id}'>${property.label}</label><select id='${id}' name='${id}'  ${disabled}  class="filed">`;
 			for (let option of property.values) {
 				let selected = value == option.value ? "selected" : "";
 				template += `<option value='${option.value}' ${selected}>${option.name}</option>`;
@@ -93,7 +110,7 @@ async function initOptions() {
 		if (property.type == "textarea") {
 			template += `<div class="property text">
 				<label for='${id}'>${property.label}</label>
-				<textarea id='${id}' name='${id}' rows="5">${value}</textarea>
+				<textarea id='${id}' name='${id}' rows="5"  ${disabled} class="filed">${value}</textarea>
 			</div>
 			`;
 		}
@@ -118,6 +135,28 @@ async function initOptions() {
 			window.close();
 		}
 	});
+
+	const checkboxes = document.querySelectorAll("input[type=checkbox]");
+
+	for (let checkbox of checkboxes) {
+		toggleEnabledState(checkbox.id, checkbox.checked);
+		checkbox.addEventListener("change", (event) => {
+			toggleEnabledState(event.currentTarget.id, event.currentTarget.checked);
+		});
+	}
+
+	function toggleEnabledState(enabledBy, checked) {
+		for (const [id, property] of Object.entries(properties)) {
+			if (property.enabledBy != undefined && property.enabledBy == enabledBy) {
+				let filed = document.getElementById(id);
+				if (checked) {
+					filed.removeAttribute("disabled");
+				} else {
+					filed.setAttribute("disabled", true);
+				}
+			}
+		}
+	}
 }
 
 initOptions();

@@ -1,13 +1,13 @@
 {
 	"name": "Bookmarks Page 3",
 	"description": "Стартовая вкладка с закладками",
-	"version": "1.0",
+	"version": "1.2",
 	"manifest_version": 3,
 	"action": {
 		"default_icon": "/src/tab.png",
 		"default_popup": "options.html"
 	},
-	"permissions": ["storage", "favicon"],
+	"permissions": ["storage", "favicon", "bookmarks"],
 	"chrome_url_overrides": {
 		"newtab": "newtab.html"
 	}

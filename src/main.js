@@ -2,14 +2,22 @@ async function init() {
 	const app = document.querySelector("#app");
 	const searchFiled = app.querySelector(".searchFiled");
 
+	//Получаем настройки расширения
 	let properties = {};
-	const propertyKeys = ["dark_theme", "raindrop_api_key", "show_folder_icons", "show_favicons", "show_galleries", "censored_tags", "ignore_tags", "background_image", "background_position", "custom_css"];
+	const propertyKeys = ["use_raindrop", "dark_theme", "raindrop_api_key", "show_folder_icons", "show_favicons", "show_galleries", "censored_tags", "ignore_tags", "background_image", "background_position", "custom_css"];
 
 	for (let key of propertyKeys) {
 		properties[key] = (await chrome.storage.sync.get(key))[key] || null;
 	}
 
+	//Превращаем некоторые настройки в сеты для удобства
+	properties["censored_tags"] = properties["censored_tags"] ? new Set(properties["censored_tags"].split(",")) : new Set();
+	properties["ignore_tags"] = properties["ignore_tags"] ? new Set(properties["ignore_tags"].split(",")) : new Set();
+
+	//Применяем стили и фоновую картинку
 	function initStyle() {
+		if (properties.dark_theme === "on") document.body.classList.add("dark");
+
 		if (properties["background_image"] != null) {
 			let oldCover = document.querySelector(".cover");
 			if (oldCover) oldCover.remove();
@@ -44,11 +52,7 @@ async function init() {
 		}
 	}
 
-	properties["censored_tags"] = properties["censored_tags"] ? new Set(properties["censored_tags"].split(",")) : new Set();
-	properties["ignore_tags"] = properties["ignore_tags"] ? new Set(properties["ignore_tags"].split(",")) : new Set();
-
 	const token = properties["raindrop_api_key"];
-	if (properties.dark_theme === "on") document.body.classList.add("dark");
 
 	//const faviconProvider = "https://www.google.com/s2/favicons?&sz=24&domain=https://";
 	const faviconProvider = "http://favicon.yandex.net/favicon/";
@@ -62,6 +66,7 @@ async function init() {
 		document.location.href = url + query;
 	};
 
+	//Обработчик клика по кнопкам поисковых систем
 	const searchButtons = app.querySelectorAll(".searchForm .btn");
 	for (let btn of searchButtons) {
 		btn.addEventListener("click", (event) => {
@@ -69,6 +74,7 @@ async function init() {
 		});
 	}
 
+	//Обрапотчик нажатия Enter в поисковой строке
 	searchFiled.addEventListener("keydown", (event) => {
 		if (event.key == "Enter") {
 			let btn = app.querySelector(".searchForm .btn");
@@ -76,8 +82,91 @@ async function init() {
 		}
 	});
 
+	async function initLocalBookmarks() {
+		let tree = app.querySelector(".tree");
+		tree.innerHTML = "";
+		let subfolders = document.createElement("ul");
+		subfolders.classList.add("folder");
+		tree.appendChild(subfolders);
+
+		let items = [];
+
+		await chrome.bookmarks.getSubTree("2", (itemTree) => {
+			itemTree[0].children.forEach((item) => {
+				let output = drawItem(item);
+				subfolders.innerHTML += output.html;
+				items.push(...output.items);
+			});
+
+			initFuseSearch(items);
+		});
+
+		function drawItem(item) {
+			//console.log(item);
+			let output = "";
+			let items = [];
+			if (item.url) {
+				item.link = item.url;
+				item.abbr = getAbbr(item.title);
+				item.translate = keyboardTranslate(item.title);
+				item["_id"] = item.id;
+
+				items.push(item);
+				output = `<li class='item' id='item_${item.id}'>`;
+
+				let host = item.url.split("/")[2];
+				let icon = `<img src='${faviconProvider}${host}' data-host="${item.link}" class="icon">`;
+				if (properties.show_favicons !== "on") {
+					icon = "";
+				}
+				output += `<a href='${item.url}'>${icon}<span class='title'>${item.title}</span></a>`;
+				output += `</li>`;
+			} else {
+				if (item.children.length == 0) {
+					return "";
+				}
+				output = `<li class='folder'>`;
+				let icon = `<svg class='icon'><use xlink:href="#default_collection"></use></svg>`;
+
+				if (properties.show_folder_icons !== "on") {
+					icon = "";
+				}
+
+				output += `<div><span>${icon}<span class='title'>${item.title}</span></span></div>`;
+				output += `<ul class='subitems'>`;
+
+				for (let child of item.children) {
+					let process = drawItem(child);
+					output += process.html;
+					items.push(...process.items);
+				}
+
+				output += "</ul>";
+				output += `</li>`;
+			}
+			return { html: output, items: items };
+		}
+
+		updateLocalEvents(true);
+	}
+
+	function updateLocalEvents(enable) {
+		if (enable) {
+			chrome.bookmarks.onChanged.addListener(initLocalBookmarks);
+			chrome.bookmarks.onMoved.addListener(initLocalBookmarks);
+			chrome.bookmarks.onRemoved.addListener(initLocalBookmarks);
+			chrome.bookmarks.onCreated.addListener(initLocalBookmarks);
+		} else {
+			chrome.bookmarks.onChanged.removeListener(initLocalBookmarks);
+			chrome.bookmarks.onMoved.removeListener(initLocalBookmarks);
+			chrome.bookmarks.onRemoved.removeListener(initLocalBookmarks);
+			chrome.bookmarks.onCreated.removeListener(initLocalBookmarks);
+		}
+	}
+
 	//Подключаемся к Raindrop и берем оттуда дерево закладок
 	async function initRaindrop() {
+		updateLocalEvents(false);
 		async function getItems(token, page = 0) {
 			const response = await fetch(`https://api.raindrop.io/rest/v1/raindrops/0?page=${page}`, {
 				headers: { Authorization: `Bearer ${token}` },
@@ -298,8 +387,13 @@ async function init() {
 
 	initStyle();
 
-	if (token) initRaindrop();
+	if (properties.use_raindrop == "on" && token) {
+		initRaindrop();
+	} else {
+		initLocalBookmarks();
+	}
 
+	//Отслеживание изменений настроек плагина
 	chrome.storage.onChanged.addListener((changes, namespace) => {
 		for (let [key, { oldValue, newValue }] of Object.entries(changes)) {
 			//console.log(`Storage key "${key}" in namespace "${namespace}" changed.`, `Old value was "${oldValue}", new value is "${newValue}".`);
@@ -320,7 +414,7 @@ async function init() {
 				}
 			}
 
-			const keysToUpdateRaindrop = ["raindrop_api_key", "show_folder_icons", "show_favicons", "show_galleries", "censored_tags", "ignore_tags"];
+			const keysToUpdateRaindrop = ["use_raindrop", "raindrop_api_key", "show_folder_icons", "show_favicons", "show_galleries", "censored_tags", "ignore_tags"];
 			for (let updateKey of keysToUpdateRaindrop) {
 				if (key == updateKey) {
 					if ((key == "censored_tags" || key == "ignore_tags") && newValue != null) {
@@ -328,7 +422,12 @@ async function init() {
 					} else {
 						properties[updateKey] = newValue;
 					}
-					initRaindrop();
+
+					if (properties.use_raindrop == "on" && token) {
+						initRaindrop();
+					} else {
+						initLocalBookmarks();
+					}
 				}
 			}
 		}
@@ -339,6 +438,7 @@ async function init() {
 		return abbr != null ? abbr.join("") : "";
 	}
 
+	//Перевод в другую раскладку клавиатуры, если забыл переключить
 	function keyboardTranslate(input) {
 		function charWeight(str, charTable) {
 			return String(str)

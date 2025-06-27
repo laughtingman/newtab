@@ -1,6 +1,6 @@
 # newtab
 
-Chrome extenstion to show bookmarks from Raindrop.io and easy search
+Chrome extenstion to show bookmarks from browser store or Raindrop.io to easy search
 
 ## Install
 
@@ -11,7 +11,7 @@ Chrome extenstion to show bookmarks from Raindrop.io and easy search
 5. Find and select the app or extension folder.
 6. Open a new tab in Chrome and make sure it loads and works correctly.
 
-## Get API token
+## Get Raindrop.io API token
 
 1. Log in to your Raindrop.io account
 2. Go to https://app.raindrop.io/settings/integrations.
