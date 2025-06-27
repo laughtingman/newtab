@@ -305,10 +305,18 @@ li div {
 	margin: 1rem auto;
 }
 
-.warning:empty {
-	display: none;
+.warning {
 	color: var(--color);
 	text-align: center;
+	margin-bottom: 1rem;
+}
+
+.warning:not(:empty):before {
+	content: "⚠️";
+}
+
+.warning:empty {
+	display: none;
 }
 
 .dark symbol#default_collection {

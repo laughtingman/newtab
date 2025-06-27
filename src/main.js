@@ -166,6 +166,7 @@ async function init() {
 
 	//Подключаемся к Raindrop и берем оттуда дерево закладок
 	async function initRaindrop() {
+		document.querySelector(".warning").innerHTML = "";
 		updateLocalEvents(false);
 		async function getItems(token, page = 0) {
 			const response = await fetch(`https://api.raindrop.io/rest/v1/raindrops/0?page=${page}`, {
@@ -252,7 +253,12 @@ async function init() {
 		fetch("https://api.raindrop.io/rest/v1/collections/childrens", {
 			headers: { Authorization: `Bearer ${token}` },
 		})
-			.then((resp) => resp.json())
+			.then((response) => {
+				if (response.status !== 200) {
+					throw new Error("Ошибка подключения к raindrop.io, статус: " + response.status);
+				}
+				return response.json();
+			})
 			.then((json) => {
 				getItems(token).then((items) => {
 					//console.log("allitems", items, json.items);
@@ -277,8 +283,7 @@ async function init() {
 				});
 			})
 			.catch((error) => {
-				console.error(error);
-				//document.querySelector(".warning").innerHTML = error.message;
+				document.querySelector(".warning").innerHTML = error.message;
 			});
 	}
 
