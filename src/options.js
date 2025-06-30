@@ -37,6 +37,17 @@ async function initOptions() {
 			type: "textarea",
 			value: "",
 		},
+		local_folder: {
+			label: "Папки-источник локальных закладок",
+			type: "select",
+			values: [
+				{ value: "0", name: "Все" },
+				{ value: "1", name: "Панель закладок" },
+				{ value: "2", name: "Другие закладки" },
+			],
+			value: 1,
+			enabledBy: "!use_raindrop",
+		},
 		use_raindrop: {
 			label: "Использовать закладки из Raindrop вместо локальных",
 			type: "checkbox",
@@ -75,7 +86,11 @@ async function initOptions() {
 		let disabled = "";
 
 		if (property.enabledBy != undefined) {
-			disabled = properties[property.enabledBy].value == "off" ? "disabled" : "";
+			if (property.enabledBy[0] != "!") {
+				disabled = properties[property.enabledBy].value == "off" ? "disabled" : "";
+			} else {
+				disabled = properties[property.enabledBy.substring(1)].value == "on" ? "disabled" : "";
+			}
 		}
 
 		let template = "<div class='propertyes'>";
@@ -147,12 +162,22 @@ async function initOptions() {
 
 	function toggleEnabledState(enabledBy, checked) {
 		for (const [id, property] of Object.entries(properties)) {
-			if (property.enabledBy != undefined && property.enabledBy == enabledBy) {
+			if (property.enabledBy != undefined) {
 				let filed = document.getElementById(id);
-				if (checked) {
-					filed.removeAttribute("disabled");
-				} else {
-					filed.setAttribute("disabled", true);
+				if (property.enabledBy == enabledBy) {
+					if (checked) {
+						filed.removeAttribute("disabled");
+					} else {
+						filed.setAttribute("disabled", true);
+					}
+				}
+
+				if (property.enabledBy == "!" + enabledBy) {
+					if (!checked) {
+						filed.removeAttribute("disabled");
+					} else {
+						filed.setAttribute("disabled", true);
+					}
 				}
 			}
 		}

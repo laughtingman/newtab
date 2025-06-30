@@ -98,6 +98,10 @@ li {
 	break-inside: avoid-column;
 }
 
+ul.nobreak > li.folder {
+	break-inside: auto;
+}
+
 li ul {
 	padding-left: 10%;
 }

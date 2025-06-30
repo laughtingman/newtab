@@ -4,7 +4,7 @@ async function init() {
 
 	//Получаем настройки расширения
 	let properties = {};
-	const propertyKeys = ["use_raindrop", "dark_theme", "raindrop_api_key", "show_folder_icons", "show_favicons", "show_galleries", "censored_tags", "ignore_tags", "background_image", "background_position", "custom_css"];
+	const propertyKeys = ["use_raindrop", "dark_theme", "raindrop_api_key", "show_folder_icons", "show_favicons", "show_galleries", "censored_tags", "ignore_tags", "background_image", "background_position", "custom_css", "local_folder"];
 
 	for (let key of propertyKeys) {
 		properties[key] = (await chrome.storage.sync.get(key))[key] || null;
@@ -13,6 +13,10 @@ async function init() {
 	//Превращаем некоторые настройки в сеты для удобства
 	properties["censored_tags"] = properties["censored_tags"] ? new Set(properties["censored_tags"].split(",")) : new Set();
 	properties["ignore_tags"] = properties["ignore_tags"] ? new Set(properties["ignore_tags"].split(",")) : new Set();
+
+	if (properties["local_folder"] == null) {
+		properties["local_folder"] = "1";
+	}
 
 	//Применяем стили и фоновую картинку
 	function initStyle() {
@@ -86,12 +90,12 @@ async function init() {
 		let tree = app.querySelector(".tree");
 		tree.innerHTML = "";
 		let subfolders = document.createElement("ul");
-		subfolders.classList.add("folder");
+		subfolders.classList.add("subfolders");
 		tree.appendChild(subfolders);
 
 		let items = [];
 
-		await chrome.bookmarks.getSubTree("2", (itemTree) => {
+		await chrome.bookmarks.getSubTree(properties["local_folder"], (itemTree) => {
 			itemTree[0].children.forEach((item) => {
 				let output = drawItem(item);
 				subfolders.innerHTML += output.html;
@@ -99,6 +103,7 @@ async function init() {
 			});
 
 			initFuseSearch(items);
+			fixLowColumnsCount();
 		});
 
 		function drawItem(item) {
@@ -280,11 +285,20 @@ async function init() {
 					}
 
 					initFuseSearch(filteredItems);
+					fixLowColumnsCount();
 				});
 			})
 			.catch((error) => {
 				document.querySelector(".warning").innerHTML = error.message;
 			});
+	}
+
+	//если мало папок первого уровня, то позволяем им рваться на колонки
+	function fixLowColumnsCount() {
+		let topFolders = app.querySelectorAll(".tree>.subfolders>.folder");
+		if (topFolders.length < 5) {
+			app.querySelector(".tree>.subfolders").classList.add("nobreak");
+		}
 	}
 
 	//Инициируем полнотекстовый поиск
@@ -419,7 +433,7 @@ async function init() {
 				}
 			}
 
-			const keysToUpdateRaindrop = ["use_raindrop", "raindrop_api_key", "show_folder_icons", "show_favicons", "show_galleries", "censored_tags", "ignore_tags"];
+			const keysToUpdateRaindrop = ["use_raindrop", "raindrop_api_key", "show_folder_icons", "show_favicons", "show_galleries", "censored_tags", "ignore_tags", "local_folder"];
 			for (let updateKey of keysToUpdateRaindrop) {
 				if (key == updateKey) {
 					if ((key == "censored_tags" || key == "ignore_tags") && newValue != null) {
