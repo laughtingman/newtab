@@ -207,6 +207,7 @@ li div {
 	border: 1px solid #d8dee9;
 	padding: 5px 0 5px 5px;
 	min-width: calc(300px + 2rem);
+	align-items: center;
 }
 
 .dark .searchForm {
@@ -223,7 +224,7 @@ li div {
 
 .searchForm input {
 	width: 100%;
-	padding: 10px 20px;
+	padding: 10px 15px;
 	outline: none !important;
 	background-color: transparent;
 	border: none;
@@ -252,6 +253,21 @@ li div {
 
 .searchForm .btn:hover {
 	background-color: #eceff4;
+}
+
+.searchForm .icon-find {
+	stroke-width: 0;
+	stroke: currentColor;
+	fill: #4c566a;
+	width: 16px;
+	height: 16px;
+	min-width: 16px;
+	display: inline-block;
+	margin-left: 0.5rem;
+}
+
+.searchForm:focus-within .icon-find {
+	fill: currentColor;
 }
 
 .dark .searchForm .btn:hover {

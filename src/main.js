@@ -74,6 +74,7 @@ async function init() {
 	const searchButtons = app.querySelectorAll(".searchForm .btn");
 	for (let btn of searchButtons) {
 		btn.addEventListener("click", (event) => {
+			event.stopPropagation();
 			internetSearch(btn.dataset.url);
 		});
 	}
@@ -411,6 +412,10 @@ async function init() {
 	} else {
 		initLocalBookmarks();
 	}
+
+	document.querySelector(".searchForm").addEventListener("click", () => {
+		searchFiled.focus();
+	});
 
 	//Отслеживание изменений настроек плагина
 	chrome.storage.onChanged.addListener((changes, namespace) => {
